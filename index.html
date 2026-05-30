@@ -21,10 +21,34 @@
             padding: 12px;
         }
 
+        .brand {
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .brand-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        .brand-subtitle {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+        }
+
         .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             margin-bottom: 12px;
         }
 
@@ -186,8 +210,15 @@
     <script src="./main.js"></script>
 </head>
 <body>
+    <div class="brand">
+        <div class="brand-title-row">
+            <img src="./images/logo.png" alt="源流数字" class="brand-logo">
+            <h1>源流WPS助手</h1>
+        </div>
+        <p class="brand-subtitle">由 DeepSeek 大模型驱动 · 源流数字出品</p>
+    </div>
+
     <div class="header">
-        <h1>DeepSeek 助手</h1>
         <button id="settingsBtn" type="button" title="设置">⚙</button>
     </div>
 
