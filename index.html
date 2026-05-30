@@ -275,6 +275,13 @@
             color: #27ae60;
             text-align: center;
         }
+
+        .usage-tip {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #999;
+            line-height: 1.6;
+        }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -317,6 +324,7 @@
         <div id="result">等待提问...</div>
         <button id="replaceBtn" type="button">替换选中文字</button>
         <div id="replaceHint">已替换</div>
+        <p class="usage-tip">💡 润色/翻译/续写/总结：请先在文档中选中文字，点击对应按钮即可。结果满意后点击「替换选中文字」将结果写入文档。</p>
     </div>
 
     <script>
@@ -516,7 +524,7 @@
                     showError("请先在文档中选中文字");
                     return;
                 }
-                runQuickAction("请将以下文字翻译成中文，直接输出翻译结果，不要解释：\n\n" + text);
+                runQuickAction("请判断以下文字的语言：如果是中文，翻译成英文；如果是英文，翻译成中文。直接输出翻译结果，不要解释：\n\n" + text);
             });
 
             document.getElementById("quickContinue").addEventListener("click", function () {
