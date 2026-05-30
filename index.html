@@ -301,10 +301,6 @@
             display: none;
         }
 
-        #setupPanel {
-            padding: 16px 0;
-        }
-
         .setup-title {
             font-size: 13px;
             color: #333;
@@ -355,6 +351,11 @@
         .quick-group { display: block; margin-bottom: 10px; }
         .quick-group-label { display: block; font-size: 12px; color: #555; font-weight: bold; margin-bottom: 4px; }
         .quick-group-buttons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: space-between; }
+
+        .precision-section { background: transparent; border: 1px solid #5A9A5E; border-radius: 6px; padding: 10px; margin-bottom: 10px; }
+        .precision-title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 8px; }
+        .precision-row { margin-bottom: 6px; }
+        .precision-row label { font-size: 12px; color: #555; display: block; margin-bottom: 2px; }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -374,31 +375,6 @@
     </div>
 
     <div id="settingsPanel">
-        <div class="settings-field">
-            <label for="settingsRoleSelect">角色定位</label>
-            <select id="settingsRoleSelect" class="setup-select">
-                <option value="不限">不限</option>
-                <option value="律师">律师</option>
-                <option value="政府工作人员">政府工作人员</option>
-                <option value="企业管理者">企业管理者</option>
-                <option value="财务人员">财务人员</option>
-                <option value="项目经理">项目经理</option>
-                <option value="市场营销人员">市场营销人员</option>
-                <option value="技术工程师">技术工程师</option>
-            </select>
-        </div>
-        <div class="settings-field">
-            <label for="settingsDocTypeSelect">文档类型</label>
-            <select id="settingsDocTypeSelect" class="setup-select">
-                <option value="自动识别">自动识别</option>
-                <option value="合同协议">合同协议</option>
-                <option value="政策文件">政策文件</option>
-                <option value="商业报告">商业报告</option>
-                <option value="邮件函件">邮件函件</option>
-                <option value="新闻稿">新闻稿</option>
-                <option value="通用文本">通用文本</option>
-            </select>
-        </div>
         <label for="apiKey">DeepSeek API Key</label>
         <input id="apiKey" type="password" placeholder="请在此处添加您自己的 DeepSeek API Key">
         <div style="display:flex;gap:8px;">
@@ -408,11 +384,12 @@
         <div id="saveHint">已保存</div>
     </div>
 
-    <div id="setupPanel">
-        <p class="setup-title">开始前，请完成以下设置</p>
-        <div class="setup-field">
-            <label for="roleSelect">您的角色定位</label>
-            <select id="roleSelect" class="setup-select">
+    <div id="mainPanel" class="">
+    <div class="precision-section">
+        <div class="precision-title">精准匹配</div>
+        <div class="precision-row">
+            <label>您的角色定位</label>
+            <select id="mainRoleSelect" class="setup-select">
                 <option value="不限">不限</option>
                 <option value="律师">律师</option>
                 <option value="政府工作人员">政府工作人员</option>
@@ -423,9 +400,9 @@
                 <option value="技术工程师">技术工程师</option>
             </select>
         </div>
-        <div class="setup-field">
-            <label for="docTypeSelect">当前文档类型</label>
-            <select id="docTypeSelect" class="setup-select">
+        <div class="precision-row">
+            <label>当前文档类型</label>
+            <select id="mainDocTypeSelect" class="setup-select">
                 <option value="自动识别">自动识别</option>
                 <option value="合同协议">合同协议</option>
                 <option value="政策文件">政策文件</option>
@@ -435,10 +412,19 @@
                 <option value="通用文本">通用文本</option>
             </select>
         </div>
-        <button id="setupConfirmBtn" type="button">开始使用</button>
+        <div class="precision-row">
+            <label>文档受众</label>
+            <select id="audienceSelect" class="setup-select">
+                <option value="不限">不限</option>
+                <option value="普通大众">普通大众</option>
+                <option value="专业人士">专业人士</option>
+                <option value="政府/监管机构">政府/监管机构</option>
+                <option value="投资人/金融机构">投资人/金融机构</option>
+                <option value="学生/教育场景">学生/教育场景</option>
+                <option value="企业管理层">企业管理层</option>
+            </select>
+        </div>
     </div>
-
-    <div id="mainPanel" class="hidden">
     <div class="quick-actions">
         <div class="quick-group">
             <span class="quick-group-label">写作类</span>
@@ -491,13 +477,13 @@
 
             var settingsBtn = document.getElementById("settingsBtn");
             var settingsPanel = document.getElementById("settingsPanel");
-            var setupPanel = document.getElementById("setupPanel");
             var mainPanel = document.getElementById("mainPanel");
-            var roleSelect = document.getElementById("roleSelect");
-            var docTypeSelect = document.getElementById("docTypeSelect");
-            var setupConfirmBtn = document.getElementById("setupConfirmBtn");
             var settingsRoleSelect = document.getElementById("settingsRoleSelect");
             var settingsDocTypeSelect = document.getElementById("settingsDocTypeSelect");
+            var mainRoleSelect = document.getElementById("mainRoleSelect");
+            var mainDocTypeSelect = document.getElementById("mainDocTypeSelect");
+            var audienceSelect = document.getElementById("audienceSelect");
+            var AUDIENCE_KEY = "wps_assistant_audience";
             var apiKeyEl = document.getElementById("apiKey");
             var saveKeyBtn = document.getElementById("saveKeyBtn");
             var saveHint = document.getElementById("saveHint");
@@ -509,26 +495,16 @@
             var quickBtns = document.querySelectorAll(".quick-actions button");
 
             function syncSelectValues(sourceRole, sourceDocType) {
-                roleSelect.value = sourceRole;
-                docTypeSelect.value = sourceDocType;
                 settingsRoleSelect.value = sourceRole;
                 settingsDocTypeSelect.value = sourceDocType;
+                if (mainRoleSelect) mainRoleSelect.value = sourceRole;
+                if (mainDocTypeSelect) mainDocTypeSelect.value = sourceDocType;
             }
 
             function saveUserPrefs(role, docType) {
                 localStorage.setItem(ROLE_KEY, role);
                 localStorage.setItem(DOC_TYPE_KEY, docType);
                 syncSelectValues(role, docType);
-            }
-
-            function showMainPanel() {
-                setupPanel.classList.add("hidden");
-                mainPanel.classList.remove("hidden");
-            }
-
-            function showSetupPanel() {
-                setupPanel.classList.remove("hidden");
-                mainPanel.classList.add("hidden");
             }
 
             var savedKey = localStorage.getItem(STORAGE_KEY);
@@ -540,22 +516,28 @@
             var savedDocType = localStorage.getItem(DOC_TYPE_KEY);
             if (savedRole && savedDocType) {
                 syncSelectValues(savedRole, savedDocType);
-                showMainPanel();
             } else {
                 if (savedRole) {
-                    roleSelect.value = savedRole;
                     settingsRoleSelect.value = savedRole;
+                    if (mainRoleSelect) mainRoleSelect.value = savedRole;
                 }
                 if (savedDocType) {
-                    docTypeSelect.value = savedDocType;
                     settingsDocTypeSelect.value = savedDocType;
+                    if (mainDocTypeSelect) mainDocTypeSelect.value = savedDocType;
                 }
-                showSetupPanel();
             }
 
-            setupConfirmBtn.addEventListener("click", function () {
-                saveUserPrefs(roleSelect.value, docTypeSelect.value);
-                showMainPanel();
+            var savedAudience = localStorage.getItem(AUDIENCE_KEY);
+            if (savedAudience) audienceSelect.value = savedAudience;
+
+            mainRoleSelect.addEventListener("change", function() {
+                saveUserPrefs(mainRoleSelect.value, mainDocTypeSelect.value);
+            });
+            mainDocTypeSelect.addEventListener("change", function() {
+                saveUserPrefs(mainRoleSelect.value, mainDocTypeSelect.value);
+            });
+            audienceSelect.addEventListener("change", function() {
+                localStorage.setItem(AUDIENCE_KEY, audienceSelect.value);
             });
 
             settingsBtn.addEventListener("click", function () {
@@ -651,6 +633,11 @@
                     systemPrompt = "你是一位专业的办公助手，请根据文档内容自动判断文档类型，以符合该文档风格的方式处理文字。";
                 } else {
                     systemPrompt = "你是一位" + userRole + "，正在处理一份" + docType + "类型的文档（如果文档类型是\"自动识别\"，请根据内容自动判断）。请始终站在该角色的专业视角，以符合该文档类型的风格和规范来处理文字。";
+                }
+
+                var audience = localStorage.getItem(AUDIENCE_KEY) || "不限";
+                if (audience !== "不限") {
+                    systemPrompt += "，文档的目标受众是" + audience + "。";
                 }
 
                 fetch(API_URL, {
