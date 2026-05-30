@@ -282,6 +282,61 @@
             color: #999;
             line-height: 1.6;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        #setupPanel {
+            padding: 16px 0;
+        }
+
+        .setup-title {
+            font-size: 13px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .setup-field {
+            margin-bottom: 12px;
+        }
+
+        .setup-select {
+            width: 100%;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .setup-select:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        #setupConfirmBtn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        #setupConfirmBtn:hover {
+            background: #3a7bc8;
+        }
+
+        .settings-field {
+            margin-bottom: 12px;
+        }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -301,12 +356,68 @@
     </div>
 
     <div id="settingsPanel">
+        <div class="settings-field">
+            <label for="settingsRoleSelect">角色定位</label>
+            <select id="settingsRoleSelect" class="setup-select">
+                <option value="不限">不限</option>
+                <option value="律师">律师</option>
+                <option value="政府工作人员">政府工作人员</option>
+                <option value="企业管理者">企业管理者</option>
+                <option value="财务人员">财务人员</option>
+                <option value="项目经理">项目经理</option>
+                <option value="市场营销人员">市场营销人员</option>
+                <option value="技术工程师">技术工程师</option>
+            </select>
+        </div>
+        <div class="settings-field">
+            <label for="settingsDocTypeSelect">文档类型</label>
+            <select id="settingsDocTypeSelect" class="setup-select">
+                <option value="自动识别">自动识别</option>
+                <option value="合同协议">合同协议</option>
+                <option value="政策文件">政策文件</option>
+                <option value="商业报告">商业报告</option>
+                <option value="邮件函件">邮件函件</option>
+                <option value="新闻稿">新闻稿</option>
+                <option value="通用文本">通用文本</option>
+            </select>
+        </div>
         <label for="apiKey">API Key</label>
         <input id="apiKey" type="password" placeholder="请输入您的 DeepSeek API Key">
         <button id="saveKeyBtn" type="button">保存</button>
         <div id="saveHint">已保存</div>
     </div>
 
+    <div id="setupPanel">
+        <p class="setup-title">开始前，请完成以下设置</p>
+        <div class="setup-field">
+            <label for="roleSelect">您的角色定位</label>
+            <select id="roleSelect" class="setup-select">
+                <option value="不限">不限</option>
+                <option value="律师">律师</option>
+                <option value="政府工作人员">政府工作人员</option>
+                <option value="企业管理者">企业管理者</option>
+                <option value="财务人员">财务人员</option>
+                <option value="项目经理">项目经理</option>
+                <option value="市场营销人员">市场营销人员</option>
+                <option value="技术工程师">技术工程师</option>
+            </select>
+        </div>
+        <div class="setup-field">
+            <label for="docTypeSelect">当前文档类型</label>
+            <select id="docTypeSelect" class="setup-select">
+                <option value="自动识别">自动识别</option>
+                <option value="合同协议">合同协议</option>
+                <option value="政策文件">政策文件</option>
+                <option value="商业报告">商业报告</option>
+                <option value="邮件函件">邮件函件</option>
+                <option value="新闻稿">新闻稿</option>
+                <option value="通用文本">通用文本</option>
+            </select>
+        </div>
+        <button id="setupConfirmBtn" type="button">开始使用</button>
+    </div>
+
+    <div id="mainPanel" class="hidden">
     <div class="quick-actions">
         <button type="button" id="quickPolish">润色</button>
         <button type="button" id="quickTranslate">翻译</button>
@@ -326,15 +437,25 @@
         <div id="replaceHint">已替换</div>
         <p class="usage-tip">💡 润色/翻译/续写/总结：请先在文档中选中文字，点击对应按钮即可。结果满意后点击「替换选中文字」将结果写入文档。</p>
     </div>
+    </div>
 
     <script>
         (function () {
             var API_URL = "https://api.deepseek.com/v1/chat/completions";
             var STORAGE_KEY = "deepseek_api_key";
+            var ROLE_KEY = "user_role";
+            var DOC_TYPE_KEY = "doc_type";
             var MODEL = "deepseek-chat";
 
             var settingsBtn = document.getElementById("settingsBtn");
             var settingsPanel = document.getElementById("settingsPanel");
+            var setupPanel = document.getElementById("setupPanel");
+            var mainPanel = document.getElementById("mainPanel");
+            var roleSelect = document.getElementById("roleSelect");
+            var docTypeSelect = document.getElementById("docTypeSelect");
+            var setupConfirmBtn = document.getElementById("setupConfirmBtn");
+            var settingsRoleSelect = document.getElementById("settingsRoleSelect");
+            var settingsDocTypeSelect = document.getElementById("settingsDocTypeSelect");
             var apiKeyEl = document.getElementById("apiKey");
             var saveKeyBtn = document.getElementById("saveKeyBtn");
             var saveHint = document.getElementById("saveHint");
@@ -345,10 +466,55 @@
             var replaceHint = document.getElementById("replaceHint");
             var quickBtns = document.querySelectorAll(".quick-actions button");
 
+            function syncSelectValues(sourceRole, sourceDocType) {
+                roleSelect.value = sourceRole;
+                docTypeSelect.value = sourceDocType;
+                settingsRoleSelect.value = sourceRole;
+                settingsDocTypeSelect.value = sourceDocType;
+            }
+
+            function saveUserPrefs(role, docType) {
+                localStorage.setItem(ROLE_KEY, role);
+                localStorage.setItem(DOC_TYPE_KEY, docType);
+                syncSelectValues(role, docType);
+            }
+
+            function showMainPanel() {
+                setupPanel.classList.add("hidden");
+                mainPanel.classList.remove("hidden");
+            }
+
+            function showSetupPanel() {
+                setupPanel.classList.remove("hidden");
+                mainPanel.classList.add("hidden");
+            }
+
             var savedKey = localStorage.getItem(STORAGE_KEY);
             if (savedKey) {
                 apiKeyEl.value = savedKey;
             }
+
+            var savedRole = localStorage.getItem(ROLE_KEY);
+            var savedDocType = localStorage.getItem(DOC_TYPE_KEY);
+            if (savedRole && savedDocType) {
+                syncSelectValues(savedRole, savedDocType);
+                showMainPanel();
+            } else {
+                if (savedRole) {
+                    roleSelect.value = savedRole;
+                    settingsRoleSelect.value = savedRole;
+                }
+                if (savedDocType) {
+                    docTypeSelect.value = savedDocType;
+                    settingsDocTypeSelect.value = savedDocType;
+                }
+                showSetupPanel();
+            }
+
+            setupConfirmBtn.addEventListener("click", function () {
+                saveUserPrefs(roleSelect.value, docTypeSelect.value);
+                showMainPanel();
+            });
 
             settingsBtn.addEventListener("click", function () {
                 settingsPanel.classList.toggle("open");
@@ -364,6 +530,9 @@
                     return;
                 }
                 localStorage.setItem(STORAGE_KEY, key);
+                localStorage.setItem(ROLE_KEY, settingsRoleSelect.value);
+                localStorage.setItem(DOC_TYPE_KEY, settingsDocTypeSelect.value);
+                syncSelectValues(settingsRoleSelect.value, settingsDocTypeSelect.value);
                 saveHint.textContent = "已保存";
                 saveHint.className = "";
                 saveHint.style.display = "block";
@@ -423,6 +592,16 @@
             function callDeepSeek(apiKey, prompt, showReplace) {
                 setLoading(true);
 
+                var userRole = localStorage.getItem(ROLE_KEY) || "不限";
+                var docType = localStorage.getItem(DOC_TYPE_KEY) || "自动识别";
+                var systemPrompt;
+
+                if (userRole === "不限" && docType === "自动识别") {
+                    systemPrompt = "你是一位专业的办公助手，请根据文档内容自动判断文档类型，以符合该文档风格的方式处理文字。";
+                } else {
+                    systemPrompt = "你是一位" + userRole + "，正在处理一份" + docType + "类型的文档（如果文档类型是\"自动识别\"，请根据内容自动判断）。请始终站在该角色的专业视角，以符合该文档类型的风格和规范来处理文字。";
+                }
+
                 fetch(API_URL, {
                     method: "POST",
                     headers: {
@@ -432,6 +611,7 @@
                     body: JSON.stringify({
                         model: MODEL,
                         stream: false,
+                        system: systemPrompt,
                         messages: [
                             { role: "user", content: prompt }
                         ]
@@ -533,7 +713,7 @@
                     showError("请先在文档中选中文字");
                     return;
                 }
-                runQuickAction("请根据以下文字进行续写，风格保持一致，直接输出续写内容，不要解释：\n\n" + text);
+                runQuickAction("请对以下文字进行续写，保持风格一致，直接输出续写内容，不要解释：\n\n" + text);
             });
 
             document.getElementById("quickSummarize").addEventListener("click", function () {
