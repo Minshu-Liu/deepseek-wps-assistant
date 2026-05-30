@@ -248,6 +248,33 @@
             border-color: #e74c3c;
             background: #fdf2f2;
         }
+
+        #replaceBtn {
+            display: none;
+            width: 100%;
+            height: 30px;
+            margin-top: 8px;
+            padding: 0;
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        #replaceBtn:hover {
+            background: #219a52;
+        }
+
+        #replaceHint {
+            display: none;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #27ae60;
+            text-align: center;
+        }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -274,10 +301,10 @@
     </div>
 
     <div class="quick-actions">
-        <button type="button">润色</button>
-        <button type="button">翻译</button>
-        <button type="button">续写</button>
-        <button type="button">总结</button>
+        <button type="button" id="quickPolish">润色</button>
+        <button type="button" id="quickTranslate">翻译</button>
+        <button type="button" id="quickContinue">续写</button>
+        <button type="button" id="quickSummarize">总结</button>
     </div>
 
     <label for="question">输入问题</label>
@@ -288,6 +315,8 @@
     <div id="resultArea">
         <div id="resultLabel">回答</div>
         <div id="result">等待提问...</div>
+        <button id="replaceBtn" type="button">替换选中文字</button>
+        <div id="replaceHint">已替换</div>
     </div>
 
     <script>
@@ -304,6 +333,9 @@
             var questionEl = document.getElementById("question");
             var askBtn = document.getElementById("askBtn");
             var resultEl = document.getElementById("result");
+            var replaceBtn = document.getElementById("replaceBtn");
+            var replaceHint = document.getElementById("replaceHint");
+            var quickBtns = document.querySelectorAll(".quick-actions button");
 
             var savedKey = localStorage.getItem(STORAGE_KEY);
             if (savedKey) {
@@ -336,35 +368,51 @@
             function setLoading(isLoading) {
                 askBtn.disabled = isLoading;
                 askBtn.textContent = isLoading ? "思考中..." : "询问 DeepSeek";
+                quickBtns.forEach(function (btn) {
+                    btn.disabled = isLoading;
+                });
                 if (isLoading) {
                     resultEl.className = "loading";
                     resultEl.textContent = "思考中...";
+                    replaceBtn.style.display = "none";
+                    replaceHint.style.display = "none";
                 }
             }
 
             function showError(message) {
                 resultEl.className = "error";
                 resultEl.textContent = message;
+                replaceBtn.style.display = "none";
+                replaceHint.style.display = "none";
             }
 
-            function showResult(text) {
+            function showResult(text, showReplace) {
+                if (showReplace === undefined) {
+                    showReplace = false;
+                }
                 resultEl.className = "";
                 resultEl.textContent = text;
+                replaceBtn.style.display = showReplace ? "block" : "none";
+                replaceHint.style.display = "none";
             }
 
-            askBtn.addEventListener("click", function () {
-                var apiKey = localStorage.getItem(STORAGE_KEY);
-                if (!apiKey) {
-                    showError("请先点击 ⚙ 设置您的 API Key");
-                    return;
-                }
+            function resetActionButtons() {
+                askBtn.disabled = false;
+                askBtn.textContent = "询问 DeepSeek";
+                quickBtns.forEach(function (btn) {
+                    btn.disabled = false;
+                });
+            }
 
-                var question = questionEl.value.trim();
-                if (!question) {
-                    showError("请输入问题后再提交。");
-                    return;
+            function getSelectionText() {
+                try {
+                    return window.Application.ActiveDocument.ActiveWindow.Selection.Text || "";
+                } catch (e) {
+                    return "";
                 }
+            }
 
+            function callDeepSeek(apiKey, prompt, showReplace) {
                 setLoading(true);
 
                 fetch(API_URL, {
@@ -377,7 +425,7 @@
                         model: MODEL,
                         stream: false,
                         messages: [
-                            { role: "user", content: question }
+                            { role: "user", content: prompt }
                         ]
                     })
                 })
@@ -402,15 +450,98 @@
                             throw new Error("API 返回数据格式异常，未找到回答内容。");
                         }
 
-                        showResult(content);
+                        showResult(content, showReplace);
                     })
                     .catch(function (err) {
                         showError("错误：" + (err.message || String(err)));
                     })
                     .finally(function () {
-                        askBtn.disabled = false;
-                        askBtn.textContent = "询问 DeepSeek";
+                        resetActionButtons();
                     });
+            }
+
+            function runQuickAction(prompt) {
+                var apiKey = localStorage.getItem(STORAGE_KEY);
+                if (!apiKey) {
+                    showError("请先点击 ⚙设置 配置您的 API Key");
+                    return;
+                }
+                callDeepSeek(apiKey, prompt, true);
+            }
+
+            askBtn.addEventListener("click", function () {
+                var apiKey = localStorage.getItem(STORAGE_KEY);
+                if (!apiKey) {
+                    showError("请先点击 ⚙ 设置您的 API Key");
+                    return;
+                }
+
+                var question = questionEl.value.trim();
+                if (!question) {
+                    showError("请输入问题后再提交。");
+                    return;
+                }
+
+                callDeepSeek(apiKey, question, false);
+            });
+
+            replaceBtn.addEventListener("click", function () {
+                try {
+                    var sel = window.Application.ActiveDocument.ActiveWindow.Selection;
+                    sel.Delete();
+                    var insertText = resultEl.textContent.replace(/^[\r\n]+|[\r\n]+$/g, "");
+                    sel.InsertAfter(insertText);
+                    replaceBtn.style.display = "none";
+                    replaceHint.style.display = "block";
+                    setTimeout(function () {
+                        replaceHint.style.display = "none";
+                    }, 1000);
+                } catch (e) {
+                    showError("替换失败，请确认文档中仍有选中文字");
+                }
+            });
+
+            document.getElementById("quickPolish").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请对以下文字进行润色，使其更加流畅、专业，直接输出润色后的文字，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickTranslate").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请将以下文字翻译成中文，直接输出翻译结果，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickContinue").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请根据以下文字进行续写，风格保持一致，直接输出续写内容，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickSummarize").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    try {
+                        text = (window.Application.ActiveDocument.Content.Text || "").trim();
+                    } catch (e) {
+                        text = "";
+                    }
+                }
+                if (!text) {
+                    showError("文档内容为空，无法总结");
+                    return;
+                }
+                runQuickAction("请对以下文字进行总结，提炼核心要点，直接输出总结内容，不要解释：\n\n" + text);
             });
         })();
     </script>
