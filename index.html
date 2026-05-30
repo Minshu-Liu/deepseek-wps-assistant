@@ -30,6 +30,13 @@
         .brand-title-row {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand-title-left {
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
@@ -45,13 +52,6 @@
             text-align: center;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-bottom: 12px;
-        }
-
         h1 {
             font-size: 15px;
             font-weight: 600;
@@ -59,19 +59,36 @@
         }
 
         #settingsBtn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
             background: none;
             border: none;
-            font-size: 16px;
-            color: #666;
             cursor: pointer;
             padding: 2px 4px;
             line-height: 1;
             border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        #settingsBtn .settings-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        #settingsBtn .settings-icon {
+            font-size: 16px;
+            color: #666;
         }
 
         #settingsBtn:hover {
-            color: #4a90d9;
             background: #e8f0fa;
+        }
+
+        #settingsBtn:hover .settings-label,
+        #settingsBtn:hover .settings-icon {
+            color: #4a90d9;
         }
 
         #settingsPanel {
@@ -85,6 +102,31 @@
 
         #settingsPanel.open {
             display: block;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .quick-actions button {
+            flex: 1;
+            width: 25%;
+            height: 30px;
+            padding: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #555;
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .quick-actions button:hover {
+            border-color: #4a90d9;
+            color: #4a90d9;
         }
 
         #apiKey {
@@ -212,14 +254,16 @@
 <body>
     <div class="brand">
         <div class="brand-title-row">
-            <img src="./images/logo.png" alt="源流数字" class="brand-logo">
-            <h1>源流WPS助手</h1>
+            <div class="brand-title-left">
+                <img src="./images/logo.png" alt="源流数字" class="brand-logo">
+                <h1>源流WPS助手</h1>
+            </div>
+            <button id="settingsBtn" type="button" title="设置">
+                <span class="settings-icon">⚙</span>
+                <span class="settings-label">设置</span>
+            </button>
         </div>
         <p class="brand-subtitle">由 DeepSeek 大模型驱动 · 源流数字出品</p>
-    </div>
-
-    <div class="header">
-        <button id="settingsBtn" type="button" title="设置">⚙</button>
     </div>
 
     <div id="settingsPanel">
@@ -227,6 +271,13 @@
         <input id="apiKey" type="password" placeholder="请输入您的 DeepSeek API Key">
         <button id="saveKeyBtn" type="button">保存</button>
         <div id="saveHint">已保存</div>
+    </div>
+
+    <div class="quick-actions">
+        <button type="button">润色</button>
+        <button type="button">翻译</button>
+        <button type="button">续写</button>
+        <button type="button">总结</button>
     </div>
 
     <label for="question">输入问题</label>
