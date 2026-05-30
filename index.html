@@ -337,6 +337,10 @@
         .settings-field {
             margin-bottom: 12px;
         }
+
+        .quick-group { margin-bottom: 8px; }
+        .quick-group-label { font-size: 11px; color: #666; display: block; margin-bottom: 4px; }
+        .quick-group-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -419,10 +423,30 @@
 
     <div id="mainPanel" class="hidden">
     <div class="quick-actions">
-        <button type="button" id="quickPolish">润色</button>
-        <button type="button" id="quickTranslate">翻译</button>
-        <button type="button" id="quickContinue">续写</button>
-        <button type="button" id="quickSummarize">总结</button>
+        <div class="quick-group">
+            <span class="quick-group-label">写作类</span>
+            <div class="quick-group-buttons">
+                <button type="button" id="quickPolish">润色</button>
+                <button type="button" id="quickContinue">续写</button>
+                <button type="button" id="quickExpand">扩写</button>
+                <button type="button" id="quickRewrite">改写</button>
+            </div>
+        </div>
+        <div class="quick-group">
+            <span class="quick-group-label">整理类</span>
+            <div class="quick-group-buttons">
+                <button type="button" id="quickSummarize">总结</button>
+                <button type="button" id="quickShrink">缩写</button>
+                <button type="button" id="quickProofread">纠错</button>
+            </div>
+        </div>
+        <div class="quick-group">
+            <span class="quick-group-label">翻译类</span>
+            <div class="quick-group-buttons">
+                <button type="button" id="quickTranslate">翻译</button>
+                <button type="button" id="quickTone">转换语气</button>
+            </div>
+        </div>
     </div>
 
     <label for="question">输入问题</label>
@@ -730,6 +754,51 @@
                     return;
                 }
                 runQuickAction("请对以下文字进行总结，提炼核心要点，直接输出总结内容，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickRewrite").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请对以下文字进行改写，换一种表达方式，保持原意不变，直接输出改写结果，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickExpand").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请对以下文字进行扩写，展开描述使内容更丰富详细，直接输出扩写结果，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickShrink").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请对以下文字进行缩写，保留核心内容，直接输出缩写结果，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickProofread").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请检查以下文字中的语法错误和错别字并修正，直接输出修正后的文字，不要解释：\n\n" + text);
+            });
+
+            document.getElementById("quickTone").addEventListener("click", function () {
+                var text = getSelectionText().trim();
+                if (!text) {
+                    showError("请先在文档中选中文字");
+                    return;
+                }
+                runQuickAction("请将以下文字转换为更正式专业的语气，直接输出转换结果，不要解释：\n\n" + text);
             });
         })();
     </script>
