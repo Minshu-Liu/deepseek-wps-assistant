@@ -1,6 +1,337 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
+<head>
     <meta charset="utf-8">
-    <script type="text/javascript" src="./main.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek 助手</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 13px;
+            color: #333;
+            background: #f5f5f5;
+            width: 300px;
+            max-width: 100%;
+            padding: 12px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        #settingsBtn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+            padding: 2px 4px;
+            line-height: 1;
+            border-radius: 4px;
+        }
+
+        #settingsBtn:hover {
+            color: #4a90d9;
+            background: #e8f0fa;
+        }
+
+        #settingsPanel {
+            display: none;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #settingsPanel.open {
+            display: block;
+        }
+
+        #apiKey {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        #apiKey:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        #saveKeyBtn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        #saveKeyBtn:hover {
+            background: #3a7bc8;
+        }
+
+        #saveHint {
+            display: none;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #27ae60;
+            text-align: center;
+        }
+
+        #saveHint.error {
+            color: #c0392b;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        #question {
+            width: 100%;
+            min-height: 100px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        #question:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        #askBtn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        #askBtn:hover:not(:disabled) {
+            background: #3a7bc8;
+        }
+
+        #askBtn:disabled {
+            background: #a0c4e8;
+            cursor: not-allowed;
+        }
+
+        #resultArea {
+            margin-top: 14px;
+        }
+
+        #resultLabel {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        #result {
+            min-height: 120px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        #result.loading {
+            color: #888;
+            font-style: italic;
+        }
+
+        #result.error {
+            color: #c0392b;
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+    </style>
+    <script src="./main.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>DeepSeek 助手</h1>
+        <button id="settingsBtn" type="button" title="设置">⚙</button>
+    </div>
+
+    <div id="settingsPanel">
+        <label for="apiKey">API Key</label>
+        <input id="apiKey" type="password" placeholder="请输入您的 DeepSeek API Key">
+        <button id="saveKeyBtn" type="button">保存</button>
+        <div id="saveHint">已保存</div>
+    </div>
+
+    <label for="question">输入问题</label>
+    <textarea id="question" placeholder="请输入您的问题..."></textarea>
+
+    <button id="askBtn" type="button">询问 DeepSeek</button>
+
+    <div id="resultArea">
+        <div id="resultLabel">回答</div>
+        <div id="result">等待提问...</div>
+    </div>
+
+    <script>
+        (function () {
+            var API_URL = "https://api.deepseek.com/v1/chat/completions";
+            var STORAGE_KEY = "deepseek_api_key";
+            var MODEL = "deepseek-chat";
+
+            var settingsBtn = document.getElementById("settingsBtn");
+            var settingsPanel = document.getElementById("settingsPanel");
+            var apiKeyEl = document.getElementById("apiKey");
+            var saveKeyBtn = document.getElementById("saveKeyBtn");
+            var saveHint = document.getElementById("saveHint");
+            var questionEl = document.getElementById("question");
+            var askBtn = document.getElementById("askBtn");
+            var resultEl = document.getElementById("result");
+
+            var savedKey = localStorage.getItem(STORAGE_KEY);
+            if (savedKey) {
+                apiKeyEl.value = savedKey;
+            }
+
+            settingsBtn.addEventListener("click", function () {
+                settingsPanel.classList.toggle("open");
+                saveHint.style.display = "none";
+            });
+
+            saveKeyBtn.addEventListener("click", function () {
+                var key = apiKeyEl.value.trim();
+                if (!key) {
+                    saveHint.textContent = "请输入 API Key";
+                    saveHint.className = "error";
+                    saveHint.style.display = "block";
+                    return;
+                }
+                localStorage.setItem(STORAGE_KEY, key);
+                saveHint.textContent = "已保存";
+                saveHint.className = "";
+                saveHint.style.display = "block";
+                setTimeout(function () {
+                    saveHint.style.display = "none";
+                    settingsPanel.classList.remove("open");
+                }, 800);
+            });
+
+            function setLoading(isLoading) {
+                askBtn.disabled = isLoading;
+                askBtn.textContent = isLoading ? "思考中..." : "询问 DeepSeek";
+                if (isLoading) {
+                    resultEl.className = "loading";
+                    resultEl.textContent = "思考中...";
+                }
+            }
+
+            function showError(message) {
+                resultEl.className = "error";
+                resultEl.textContent = message;
+            }
+
+            function showResult(text) {
+                resultEl.className = "";
+                resultEl.textContent = text;
+            }
+
+            askBtn.addEventListener("click", function () {
+                var apiKey = localStorage.getItem(STORAGE_KEY);
+                if (!apiKey) {
+                    showError("请先点击 ⚙ 设置您的 API Key");
+                    return;
+                }
+
+                var question = questionEl.value.trim();
+                if (!question) {
+                    showError("请输入问题后再提交。");
+                    return;
+                }
+
+                setLoading(true);
+
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + apiKey
+                    },
+                    body: JSON.stringify({
+                        model: MODEL,
+                        stream: false,
+                        messages: [
+                            { role: "user", content: question }
+                        ]
+                    })
+                })
+                    .then(function (response) {
+                        return response.json().then(function (data) {
+                            if (!response.ok) {
+                                var errMsg = (data.error && data.error.message)
+                                    ? data.error.message
+                                    : ("请求失败，HTTP " + response.status);
+                                throw new Error(errMsg);
+                            }
+                            return data;
+                        });
+                    })
+                    .then(function (data) {
+                        var content = data.choices &&
+                            data.choices[0] &&
+                            data.choices[0].message &&
+                            data.choices[0].message.content;
+
+                        if (!content) {
+                            throw new Error("API 返回数据格式异常，未找到回答内容。");
+                        }
+
+                        showResult(content);
+                    })
+                    .catch(function (err) {
+                        showError("错误：" + (err.message || String(err)));
+                    })
+                    .finally(function () {
+                        askBtn.disabled = false;
+                        askBtn.textContent = "询问 DeepSeek";
+                    });
+            });
+        })();
+    </script>
+</body>
 </html>
 <!--这个文件是wps加载项的入口文件，wps在启动时加载这个文件-->
