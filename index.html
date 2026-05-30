@@ -144,7 +144,7 @@
         }
 
         #saveKeyBtn {
-            width: 100%;
+            width: 50%;
             margin-top: 8px;
             padding: 8px 12px;
             background: #4a90d9;
@@ -156,6 +156,21 @@
         }
 
         #saveKeyBtn:hover {
+            background: #3a7bc8;
+        }
+
+        #resetKeyBtn {
+            width: 50%;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        #resetKeyBtn:hover {
             background: #3a7bc8;
         }
 
@@ -384,9 +399,12 @@
                 <option value="通用文本">通用文本</option>
             </select>
         </div>
-        <label for="apiKey">API Key</label>
-        <input id="apiKey" type="password" placeholder="请输入您的 DeepSeek API Key">
-        <button id="saveKeyBtn" type="button">保存</button>
+        <label for="apiKey">DeepSeek API Key</label>
+        <input id="apiKey" type="password" placeholder="请在此处添加您自己的 DeepSeek API Key">
+        <div style="display:flex;gap:8px;">
+            <button id="saveKeyBtn" type="button">保存</button>
+            <button id="resetKeyBtn" type="button">重置</button>
+        </div>
         <div id="saveHint">已保存</div>
     </div>
 
@@ -564,6 +582,15 @@
                     saveHint.style.display = "none";
                     settingsPanel.classList.remove("open");
                 }, 800);
+            });
+
+            document.getElementById("resetKeyBtn").addEventListener("click", function() {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById("apiKey").value = "";
+                document.getElementById("saveHint").textContent = "已重置";
+                setTimeout(function() {
+                    document.getElementById("saveHint").textContent = "";
+                }, 2000);
             });
 
             function setLoading(isLoading) {
