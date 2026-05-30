@@ -1,2 +1,4 @@
 node_modules/
 images/*.svg
+dist/
+wps-addon-build/

@@ -84,6 +84,7 @@ function OnAction(control) {
 }
 
 function GetImage(control) {
+    console.log("GetImage called:", control.Id)
     const eleId = control.Id
     switch (eleId) {
         case "btnShowMsg":
@@ -94,6 +95,8 @@ function GetImage(control) {
             return "images/3.svg"
         case "btnOpenDeepSeek":
             return "images/a-aizhushou_huaban1fuben15_huaban1fuben15.svg"
+        case "btnOpenDebugger":
+            return "images/javascript-icon.svg"
         default:
             ;
     }
@@ -155,6 +158,13 @@ function OnOpenDeepSeek(control) {
         var url = GetUrlPath() + "/index.html";
         var tskpane = window.Application.CreateTaskPane(url);
         tskpane.Visible = true;
+    } catch(e) {
+    }
+}
+
+function OnOpenDebugger(control) {
+    try {
+        window.Application.ThisBrowser.ShowDevTools();
     } catch(e) {
     }
 }
