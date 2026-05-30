@@ -92,6 +92,8 @@ function GetImage(control) {
             return "images/2.svg"
         case "btnShowTaskPane":
             return "images/3.svg"
+        case "btnOpenDeepSeek":
+            return "images/a-aizhushou_huaban1fuben15_huaban1fuben15.svg"
         default:
             ;
     }

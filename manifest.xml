@@ -8,9 +8,18 @@
     <Command>
       <Name>OpenPanel</Name>
       <Type>WorkTaskPane</Type>
-      <Label>DeepSeek 助手</Label>
+      <Label>打开助手</Label>
       <Enable>true</Enable>
       <Url>index.html</Url>
+      <Image>images/icon-ai.png</Image>
+    </Command>
+    <Command>
+      <Name>OpenDebugger</Name>
+      <Type>WorkTaskPane</Type>
+      <Label>打开JS调试器</Label>
+      <Enable>true</Enable>
+      <Url>index.html</Url>
+      <Image>images/icon-js.png</Image>
     </Command>
   </Commands>
   <Ribbon>
@@ -21,8 +30,14 @@
             <Label>AI 助手</Label>
             <Controls>
               <Button>
-                <Label>DeepSeek 助手</Label>
+                <Label>打开助手</Label>
                 <CommandName>OpenPanel</CommandName>
+                <Image>images/icon-ai.png</Image>
+              </Button>
+              <Button>
+                <Label>打开JS调试器</Label>
+                <CommandName>OpenDebugger</CommandName>
+                <Image>images/icon-js.png</Image>
               </Button>
             </Controls>
           </Group>

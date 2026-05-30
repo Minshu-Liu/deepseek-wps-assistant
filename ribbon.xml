@@ -3,7 +3,7 @@
         <tabs>
             <tab id="deepseekTab" label="源流WPS助手">
                 <group id="deepseekGroup" label="AI 助手">
-                    <button id="btnOpenDeepSeek" label="打开助手" onAction="OnOpenDeepSeek" size="large" visible="true"/>
+                    <button id="btnOpenDeepSeek" label="打开助手" onAction="OnOpenDeepSeek" getImage="GetImage" size="large" visible="true"/>
                 </group>
             </tab>
         </tabs>
