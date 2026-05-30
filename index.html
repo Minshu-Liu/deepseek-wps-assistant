@@ -627,17 +627,24 @@
 
                 var userRole = localStorage.getItem(ROLE_KEY) || "不限";
                 var docType = localStorage.getItem(DOC_TYPE_KEY) || "自动识别";
-                var systemPrompt;
-
-                if (userRole === "不限" && docType === "自动识别") {
-                    systemPrompt = "你是一位专业的办公助手，请根据文档内容自动判断文档类型，以符合该文档风格的方式处理文字。";
-                } else {
-                    systemPrompt = "你是一位" + userRole + "，正在处理一份" + docType + "类型的文档（如果文档类型是\"自动识别\"，请根据内容自动判断）。请始终站在该角色的专业视角，以符合该文档类型的风格和规范来处理文字。";
-                }
-
                 var audience = localStorage.getItem(AUDIENCE_KEY) || "不限";
-                if (audience !== "不限") {
-                    systemPrompt += "，文档的目标受众是" + audience + "。";
+
+                var rolePart = userRole !== "不限" ? userRole : "专业办公助手";
+                var docPart = docType !== "自动识别" ? docType + "类型的文档" : "文档（请根据内容自动判断类型）";
+                var audiencePart = audience !== "不限" ? audience : "";
+
+                var systemPrompt = "你是一位" + rolePart + "，当前正在处理一份" + docPart + "。";
+                if (audiencePart) {
+                    systemPrompt += "本文档的目标受众是" + audiencePart + "。";
+                }
+                systemPrompt += "请严格遵守以下原则：\n";
+                systemPrompt += "1. 始终以" + rolePart + "的专业视角和语言风格处理文字；\n";
+                systemPrompt += "2. 输出内容必须符合" + docPart + "的格式规范和表达习惯；\n";
+                if (audiencePart) {
+                    systemPrompt += "3. 语言风格和专业深度要匹配" + audiencePart + "的认知水平和阅读习惯；\n";
+                    systemPrompt += "4. 直接输出处理结果，不要解释你的处理过程。";
+                } else {
+                    systemPrompt += "3. 直接输出处理结果，不要解释你的处理过程。";
                 }
 
                 fetch(API_URL, {
