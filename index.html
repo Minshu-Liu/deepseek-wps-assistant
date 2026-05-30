@@ -106,7 +106,9 @@
 
         .quick-actions {
             display: flex;
-            gap: 6px;
+            flex-direction: row;
+            gap: 8px;
+            align-items: flex-start;
             margin: 10px 0;
         }
 
@@ -336,9 +338,9 @@
             margin-bottom: 12px;
         }
 
-        .quick-group { margin-bottom: 10px; }
+        .quick-group { margin-bottom: 10px; flex: 1; }
         .quick-group-label { font-size: 11px; color: #666; display: block; margin-bottom: 4px; }
-        .quick-group-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+        .quick-group-buttons { display: flex; flex-direction: column; gap: 6px; }
     </style>
     <script src="./main.js"></script>
 </head>
