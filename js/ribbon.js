@@ -22,10 +22,8 @@ function OnAction(control) {
             {
                 const doc = window.Application.ActiveDocument
                 if (!doc) {
-                    alert("当前没有打开任何文档")
                     return
                 }
-                alert(doc.Name)
             }
             break;
         case "btnIsEnbable":
@@ -148,5 +146,13 @@ function OnGetLabel(control){
 }
 
 function OnNewDocumentApiEvent(doc){
-    alert("新建文件事件响应，取文件名: " + doc.Name)
+}
+
+function OnOpenDeepSeek(control) {
+    try {
+        var url = GetUrlPath() + "/index.html";
+        var tskpane = window.Application.CreateTaskPane(url);
+        tskpane.Visible = true;
+    } catch(e) {
+    }
 }
