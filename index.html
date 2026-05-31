@@ -667,8 +667,8 @@
                     body: JSON.stringify({
                         model: MODEL,
                         stream: false,
-                        system: systemPrompt,
                         messages: [
+                            { role: "system", content: systemPrompt },
                             { role: "user", content: prompt }
                         ]
                     })
