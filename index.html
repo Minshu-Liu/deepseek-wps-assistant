@@ -724,9 +724,9 @@
                 var prompt;
 
                 if (selectedText && question) {
-                    prompt = "以下是我选中的文字：\n\n" + selectedText + "\n\n我的问题是：" + question;
+                    prompt = "以下是我选中的文字：\n\n" + selectedText + "\n\n我的问题是：" + question + "\n\n要求：请用纯文本回答，不要使用任何Markdown格式符号（不要**加粗**、不要#标题、不要-列表符号），回答控制在300字以内。";
                 } else if (selectedText) {
-                    prompt = "请根据以下内容，输出相关背景资料、知识要点和延伸信息：\n\n" + selectedText;
+                    prompt = "请根据以下内容，用纯文本简要介绍核心概念和主要知识要点，不要使用任何Markdown格式符号（不要**加粗**、不要#标题、不要-列表符号），控制在300字以内：\n\n" + selectedText;
                 } else if (question) {
                     prompt = question;
                 } else {
