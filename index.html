@@ -747,14 +747,32 @@
         </div>
     </div>
 
+    <script src="./js/install-state.js"></script>
     <script>
         (function () {
-            var ACTIVATION_API = "/activation";
+            var ACTIVATION_API = "https://api.sourceflower.com/activation";
             var ACTIVATION_CODE_KEY = "activation_code";
             var DEVICE_FP_KEY = "device_fp";
             var INSTALL_TIME_KEY = "install_time";
             var WELCOME_SHOWN_KEY = "welcome_shown";
+            var INSTALL_ID_KEY = "sourceflow_last_install_id";
             var TRIAL_DAYS = 3;
+
+            function resetOwnLocalStateForNewInstall() {
+                localStorage.removeItem(WELCOME_SHOWN_KEY);
+                localStorage.removeItem(INSTALL_TIME_KEY);
+                localStorage.removeItem(ACTIVATION_CODE_KEY);
+                localStorage.removeItem(DEVICE_FP_KEY);
+            }
+
+            function syncInstallIdAndResetIfNeeded() {
+                var currentInstallId = window.SOURCEFLOW_INSTALL_ID || "dev";
+                var lastInstallId = localStorage.getItem(INSTALL_ID_KEY);
+                if (lastInstallId !== currentInstallId) {
+                    resetOwnLocalStateForNewInstall();
+                    localStorage.setItem(INSTALL_ID_KEY, currentInstallId);
+                }
+            }
 
             var appShell = document.getElementById("app-shell");
             var welcomePage = document.getElementById("welcome-page");
@@ -935,6 +953,7 @@
             }
 
             function initStartup() {
+                syncInstallIdAndResetIfNeeded();
                 getOrCreateDeviceFp();
                 if (!localStorage.getItem(WELCOME_SHOWN_KEY)) {
                     showWelcomePage();
