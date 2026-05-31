@@ -489,8 +489,6 @@
             var settingsBtn = document.getElementById("settingsBtn");
             var settingsPanel = document.getElementById("settingsPanel");
             var mainPanel = document.getElementById("mainPanel");
-            var settingsRoleSelect = document.getElementById("settingsRoleSelect");
-            var settingsDocTypeSelect = document.getElementById("settingsDocTypeSelect");
             var mainRoleSelect = document.getElementById("mainRoleSelect");
             var mainDocTypeSelect = document.getElementById("mainDocTypeSelect");
             var audienceSelect = document.getElementById("audienceSelect");
@@ -506,8 +504,6 @@
             var quickBtns = document.querySelectorAll(".quick-actions button");
 
             function syncSelectValues(sourceRole, sourceDocType) {
-                settingsRoleSelect.value = sourceRole;
-                settingsDocTypeSelect.value = sourceDocType;
                 if (mainRoleSelect) mainRoleSelect.value = sourceRole;
                 if (mainDocTypeSelect) mainDocTypeSelect.value = sourceDocType;
             }
@@ -529,11 +525,9 @@
                 syncSelectValues(savedRole, savedDocType);
             } else {
                 if (savedRole) {
-                    settingsRoleSelect.value = savedRole;
                     if (mainRoleSelect) mainRoleSelect.value = savedRole;
                 }
                 if (savedDocType) {
-                    settingsDocTypeSelect.value = savedDocType;
                     if (mainDocTypeSelect) mainDocTypeSelect.value = savedDocType;
                 }
             }
@@ -565,9 +559,12 @@
                     return;
                 }
                 localStorage.setItem(STORAGE_KEY, key);
-                localStorage.setItem(ROLE_KEY, settingsRoleSelect.value);
-                localStorage.setItem(DOC_TYPE_KEY, settingsDocTypeSelect.value);
-                syncSelectValues(settingsRoleSelect.value, settingsDocTypeSelect.value);
+                localStorage.setItem(ROLE_KEY, mainRoleSelect ? mainRoleSelect.value : "不限");
+                localStorage.setItem(DOC_TYPE_KEY, mainDocTypeSelect ? mainDocTypeSelect.value : "自动识别");
+                syncSelectValues(
+                    mainRoleSelect ? mainRoleSelect.value : "不限",
+                    mainDocTypeSelect ? mainDocTypeSelect.value : "自动识别"
+                );
                 saveHint.textContent = "已保存";
                 saveHint.className = "";
                 saveHint.style.display = "block";
