@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
@@ -367,10 +367,223 @@
         .precision-title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 8px; }
         .precision-row { margin-bottom: 6px; }
         .precision-row label { font-size: 12px; color: #555; display: block; margin-bottom: 2px; }
+
+        #trial-banner {
+            display: none;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: #F59E0B;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        #activation-page {
+            display: none;
+            padding: 16px 8px;
+        }
+
+        .activation-brand-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .activation-brand-subtitle {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        #activation-msg {
+            display: none;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        #activation-msg.error {
+            display: block;
+            background: #fde8e8;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        #activation-msg.success {
+            display: block;
+            background: #e8f8ef;
+            color: #1e7e34;
+            border: 1px solid #5A9A5E;
+        }
+
+        #activation-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #5A9A5E;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #CCE8CF;
+            margin-bottom: 10px;
+        }
+
+        #activation-input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        #activation-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 14px;
+        }
+
+        #activation-btn:hover:not(:disabled) {
+            background: #3a7bc8;
+        }
+
+        #activation-btn:disabled {
+            background: #a0c4e8;
+            cursor: not-allowed;
+        }
+
+        .activation-notes {
+            font-size: 11px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .activation-notes p {
+            margin-bottom: 4px;
+        }
+
+        .activation-purchase {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .activation-purchase a {
+            color: #4a90d9;
+            text-decoration: none;
+        }
+
+        .activation-purchase a:hover {
+            text-decoration: underline;
+        }
+
+        #welcome-page {
+            display: none;
+            padding: 16px 8px;
+        }
+
+        .welcome-brand-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .welcome-brand-subtitle {
+            font-size: 13px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .welcome-item {
+            border: 1px solid #5A9A5E;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .welcome-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .welcome-item-text {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .welcome-item-text p {
+            margin-bottom: 4px;
+        }
+
+        .welcome-item-link {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 11px;
+            color: #4a90d9;
+            text-decoration: none;
+        }
+
+        .welcome-item-link:hover {
+            text-decoration: underline;
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        #welcome-trial-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        #welcome-trial-btn:hover {
+            background: #3a7bc8;
+        }
+
+        #welcome-activate-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: #fff;
+            color: #4a90d9;
+            border: 1px solid #4a90d9;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        #welcome-activate-btn:hover {
+            background: #e8f0fa;
+        }
     </style>
     <script src="./main.js"></script>
 </head>
 <body>
+    <div id="app-shell" style="display:none;">
+    <div id="trial-banner" role="button" tabindex="0">⏰ 试用期剩余 3 天 · 点击激活永久使用</div>
     <div class="brand">
         <div class="brand-title-row">
             <div class="brand-title-left">
@@ -484,9 +697,270 @@
         </p>
     </div>
     </div>
+    </div>
+
+    <div id="welcome-page">
+        <div class="welcome-brand-title">源流数字 · WPS智能助手</div>
+        <div class="welcome-brand-subtitle">欢迎使用！开始前请了解以下内容</div>
+        <div class="welcome-item">
+            <div class="welcome-item-title">① 需要自己的 DeepSeek API Key</div>
+            <div class="welcome-item-text">
+                <p>本插件通过您自己的 API Key 直连 DeepSeek</p>
+                <p>数据安全，不经过任何第三方服务器</p>
+                <a class="welcome-item-link" href="https://platform.deepseek.com" target="_blank">点击获取 API Key</a>
+            </div>
+        </div>
+        <div class="welcome-item">
+            <div class="welcome-item-title">② 免费试用 3 天</div>
+            <div class="welcome-item-text">
+                <p>首次安装可免费试用 3 天</p>
+                <p>试用期结束后需激活才能继续使用</p>
+                <p>激活码 ¥19.9 买断，支持最多 2 台设备</p>
+            </div>
+        </div>
+        <div class="welcome-item">
+            <div class="welcome-item-title">③ 需要联网使用</div>
+            <div class="welcome-item-text">
+                <p>插件需在联网状态下使用</p>
+                <p>每次启动会自动验证激活状态</p>
+            </div>
+        </div>
+        <div class="welcome-actions">
+            <button id="welcome-trial-btn" type="button">开始试用</button>
+            <button id="welcome-activate-btn" type="button">我有激活码，立即激活</button>
+        </div>
+    </div>
+
+    <div id="activation-page">
+        <div class="activation-brand-title">源流数字 · WPS智能助手</div>
+        <div class="activation-brand-subtitle">请输入激活码以继续使用</div>
+        <div id="activation-msg"></div>
+        <input id="activation-input" type="text" placeholder="请输入激活码，如 YL-XXXXXXXXXXXXXX" autocomplete="off">
+        <button id="activation-btn" type="button">立即激活</button>
+        <div class="activation-notes">
+            <p>· 本插件需在联网状态下使用</p>
+            <p>· 激活码支持最多 2 台设备</p>
+            <p>· 试用期 3 天，激活后永久使用</p>
+        </div>
+        <div class="activation-purchase">
+            没有激活码？<a href="https://faka.arika.com.cn/links/3EC0567A" target="_blank">点击购买（¥19.9）</a>
+        </div>
+    </div>
 
     <script>
         (function () {
+            var ACTIVATION_API = "/activation";
+            var ACTIVATION_CODE_KEY = "activation_code";
+            var DEVICE_FP_KEY = "device_fp";
+            var INSTALL_TIME_KEY = "install_time";
+            var WELCOME_SHOWN_KEY = "welcome_shown";
+            var TRIAL_DAYS = 3;
+
+            var appShell = document.getElementById("app-shell");
+            var welcomePage = document.getElementById("welcome-page");
+            var activationPage = document.getElementById("activation-page");
+            var trialBanner = document.getElementById("trial-banner");
+            var activationMsg = document.getElementById("activation-msg");
+            var activationInput = document.getElementById("activation-input");
+            var activationBtn = document.getElementById("activation-btn");
+
+            function getOrCreateDeviceFp() {
+                var fp = localStorage.getItem(DEVICE_FP_KEY);
+                if (!fp) {
+                    fp = btoa(
+                        navigator.userAgent + screen.width + "x" +
+                        screen.height + navigator.language
+                    ).slice(0, 32);
+                    localStorage.setItem(DEVICE_FP_KEY, fp);
+                }
+                return fp;
+            }
+
+            function setActivationMsg(text, type) {
+                activationMsg.textContent = text;
+                activationMsg.className = type || "";
+                activationMsg.style.display = text ? "block" : "none";
+            }
+
+            function showWelcomePage() {
+                welcomePage.style.display = "block";
+                appShell.style.display = "none";
+                activationPage.style.display = "none";
+            }
+
+            function hideWelcomePage() {
+                welcomePage.style.display = "none";
+            }
+
+            function showMainUI(showTrialBanner, remainingDays) {
+                hideWelcomePage();
+                activationPage.style.display = "none";
+                appShell.style.display = "block";
+                if (showTrialBanner) {
+                    trialBanner.style.display = "block";
+                    trialBanner.textContent =
+                        "⏰ 试用期剩余 " + remainingDays + " 天 · 点击激活永久使用";
+                } else {
+                    trialBanner.style.display = "none";
+                }
+            }
+
+            function showActivationUI(message, msgType) {
+                hideWelcomePage();
+                appShell.style.display = "none";
+                activationPage.style.display = "block";
+                setActivationMsg(message || "", msgType || "");
+            }
+
+            function clearActivationCode() {
+                localStorage.removeItem(ACTIVATION_CODE_KEY);
+            }
+
+            function getTrialDaysUsed() {
+                var installTime = localStorage.getItem(INSTALL_TIME_KEY);
+                if (!installTime) {
+                    installTime = String(Date.now());
+                    localStorage.setItem(INSTALL_TIME_KEY, installTime);
+                }
+                return Math.floor((Date.now() - parseInt(installTime, 10)) / 86400000);
+            }
+
+            function getTrialRemainingDays() {
+                return Math.max(0, TRIAL_DAYS - getTrialDaysUsed());
+            }
+
+            function openActivationPageFromTrial() {
+                showActivationUI("", "");
+            }
+
+            trialBanner.addEventListener("click", openActivationPageFromTrial);
+            trialBanner.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openActivationPageFromTrial();
+                }
+            });
+
+            function runTrialOrExpiredFlow() {
+                var daysUsed = getTrialDaysUsed();
+                if (daysUsed <= TRIAL_DAYS) {
+                    showMainUI(true, getTrialRemainingDays());
+                } else {
+                    showActivationUI("试用期已结束，请激活后继续使用", "error");
+                }
+            }
+
+            function verifyStoredActivation() {
+                var code = localStorage.getItem(ACTIVATION_CODE_KEY);
+                var deviceFp = getOrCreateDeviceFp();
+                if (!code) {
+                    runTrialOrExpiredFlow();
+                    return;
+                }
+
+                fetch(
+                    ACTIVATION_API + "/check?code=" +
+                    encodeURIComponent(code) +
+                    "&device_fp=" + encodeURIComponent(deviceFp)
+                )
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (data && data.success) {
+                            showMainUI(false);
+                        } else {
+                            clearActivationCode();
+                            showActivationUI("设备验证失败，请重新激活", "error");
+                        }
+                    })
+                    .catch(function () {
+                        showActivationUI("网络连接失败，请检查网络后重试", "error");
+                    });
+            }
+
+            function setActivationBtnLoading(loading) {
+                activationBtn.disabled = loading;
+                activationBtn.textContent = loading ? "验证中..." : "立即激活";
+            }
+
+            activationBtn.addEventListener("click", function () {
+                var code = activationInput.value.trim();
+                if (!code) {
+                    setActivationMsg("请输入激活码", "error");
+                    return;
+                }
+
+                setActivationBtnLoading(true);
+                setActivationMsg("", "");
+
+                fetch(ACTIVATION_API + "/activate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        code: code,
+                        device_fp: getOrCreateDeviceFp()
+                    })
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (data && data.success) {
+                            localStorage.setItem(ACTIVATION_CODE_KEY, code);
+                            setActivationMsg("激活成功！", "success");
+                            setTimeout(function () {
+                                showMainUI(false);
+                                setActivationMsg("", "");
+                                activationInput.value = "";
+                            }, 1000);
+                        } else {
+                            setActivationMsg(
+                                (data && data.message) ? data.message : "激活失败",
+                                "error"
+                            );
+                        }
+                    })
+                    .catch(function () {
+                        setActivationMsg("网络连接失败，请检查网络后重试", "error");
+                    })
+                    .finally(function () {
+                        setActivationBtnLoading(false);
+                    });
+            });
+
+            function initActivation() {
+                getOrCreateDeviceFp();
+                verifyStoredActivation();
+            }
+
+            function initStartup() {
+                getOrCreateDeviceFp();
+                if (!localStorage.getItem(WELCOME_SHOWN_KEY)) {
+                    showWelcomePage();
+                    return;
+                }
+                initActivation();
+            }
+
+            document.getElementById("welcome-trial-btn").addEventListener("click", function () {
+                localStorage.setItem(WELCOME_SHOWN_KEY, "1");
+                hideWelcomePage();
+                initActivation();
+            });
+
+            document.getElementById("welcome-activate-btn").addEventListener("click", function () {
+                localStorage.setItem(WELCOME_SHOWN_KEY, "1");
+                hideWelcomePage();
+                showActivationUI("", "");
+            });
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initStartup);
+            } else {
+                initStartup();
+            }
+
             var API_URL = "https://api.deepseek.com/v1/chat/completions";
             var STORAGE_KEY = "deepseek_api_key";
             var ROLE_KEY = "user_role";
