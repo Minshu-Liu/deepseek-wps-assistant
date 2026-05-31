@@ -114,6 +114,9 @@
         }
 
         .quick-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             padding: 6px 12px;
             background: #CCE8CF;
             border: 1px solid #5A9A5E;
@@ -123,6 +126,12 @@
             font-family: inherit;
             cursor: pointer;
             white-space: nowrap;
+        }
+
+        .quick-actions button img {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
         }
 
         .quick-actions button:hover {
@@ -431,26 +440,26 @@
         <div class="quick-group">
             <span class="quick-group-label">写作类</span>
             <div class="quick-group-buttons">
-                <button type="button" id="quickPolish">润色</button>
-                <button type="button" id="quickContinue">续写</button>
-                <button type="button" id="quickExpand">扩写</button>
-                <button type="button" id="quickRewrite">改写</button>
+                <button type="button" id="quickPolish"><img src="./assets/icons/润色.png" alt="" width="16" height="16">润色</button>
+                <button type="button" id="quickContinue"><img src="./assets/icons/续写.png" alt="" width="16" height="16">续写</button>
+                <button type="button" id="quickExpand"><img src="./assets/icons/扩写.png" alt="" width="16" height="16">扩写</button>
+                <button type="button" id="quickRewrite"><img src="./assets/icons/改写.png" alt="" width="16" height="16">改写</button>
             </div>
         </div>
         <div class="quick-group">
             <span class="quick-group-label">整理类</span>
             <div class="quick-group-buttons">
-                <button type="button" id="quickSummarize">总结</button>
-                <button type="button" id="quickShrink">缩写</button>
-                <button type="button" id="quickProofread">纠错</button>
-                <button type="button" id="quickAbstract">摘要</button>
+                <button type="button" id="quickSummarize"><img src="./assets/icons/总结.png" alt="" width="16" height="16">总结</button>
+                <button type="button" id="quickShrink"><img src="./assets/icons/缩写.png" alt="" width="16" height="16">缩写</button>
+                <button type="button" id="quickProofread"><img src="./assets/icons/纠错.png" alt="" width="16" height="16">纠错</button>
+                <button type="button" id="quickAbstract"><img src="./assets/icons/摘要.png" alt="" width="16" height="16">摘要</button>
             </div>
         </div>
         <div class="quick-group">
             <span class="quick-group-label">翻译类</span>
             <div class="quick-group-buttons" style="justify-content: flex-start;">
-                <button type="button" id="quickTranslate">中英翻译</button>
-                <button type="button" id="quickTone">转换语气</button>
+                <button type="button" id="quickTranslate"><img src="./assets/icons/中英翻译.png" alt="" width="16" height="16">中英翻译</button>
+                <button type="button" id="quickTone"><img src="./assets/icons/转换语气.png" alt="" width="16" height="16">转换语气</button>
             </div>
         </div>
     </div>
