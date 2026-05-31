@@ -719,13 +719,22 @@
                     return;
                 }
 
+                var selectedText = getSelectionText().trim();
                 var question = questionEl.value.trim();
-                if (!question) {
-                    showError("请输入问题后再提交。");
+                var prompt;
+
+                if (selectedText && question) {
+                    prompt = "以下是我选中的文字：\n\n" + selectedText + "\n\n我的问题是：" + question;
+                } else if (selectedText) {
+                    prompt = "请根据以下内容，输出相关背景资料、知识要点和延伸信息：\n\n" + selectedText;
+                } else if (question) {
+                    prompt = question;
+                } else {
+                    showError("请输入问题，或在文档中选中文字后再提交。");
                     return;
                 }
 
-                callDeepSeek(apiKey, question, false);
+                callDeepSeek(apiKey, prompt, false);
             });
 
             replaceBtn.addEventListener("click", function () {
