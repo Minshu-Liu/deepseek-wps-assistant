@@ -24,6 +24,16 @@ export default defineConfig({
                 target: 'https://api.sourceflower.com',
                 changeOrigin: true,
                 secure: false
+            },
+            '/trial': {
+                target: 'https://api.sourceflower.com',
+                changeOrigin: true,
+                secure: false
+            },
+            '/ai': {
+                target: 'https://api.sourceflower.com',
+                changeOrigin: true,
+                secure: false
             }
         }
     }

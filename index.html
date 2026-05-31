@@ -578,6 +578,39 @@
         #welcome-activate-btn:hover {
             background: #e8f0fa;
         }
+
+        .api-key-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .api-key-actions button,
+        .api-key-actions a {
+            font-size: 12px;
+        }
+
+        .deeplink-text {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        .privacy-notice {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        #trial-quota-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #4a90d9;
+            line-height: 1.5;
+        }
     </style>
     <script src="./main.js"></script>
 </head>
@@ -599,13 +632,22 @@
     </div>
 
     <div id="settingsPanel">
-        <label for="apiKey">DeepSeek API Key</label>
-        <input id="apiKey" type="password" placeholder="请在此处添加您自己的 DeepSeek API Key">
+        <label for="apiKey">DeepSeek API Key（可选，配置后直连 DeepSeek）</label>
+        <input id="apiKey" type="password" placeholder="试用期内可不填；试用结束后请配置您自己的 DeepSeek API Key">
         <div style="display:flex;gap:8px;">
             <button id="saveKeyBtn" type="button">保存</button>
             <button id="resetKeyBtn" type="button">重置</button>
         </div>
+        <div class="api-key-actions">
+            <button id="openApiKeyPageBtn" type="button">获取 API Key</button>
+            <button id="copyApiKeyLinkBtn" type="button">复制 API Key 获取链接</button>
+            <button id="fillApiKeyBtn" type="button">填写 API Key</button>
+        </div>
+        <div class="deeplink-text" id="apiKeyLinkText">https://platform.deepseek.com/api_keys</div>
+        <div id="trial-quota-hint"></div>
         <div id="saveHint">已保存</div>
+        <p class="privacy-notice">试用期内，AI 功能可通过源流数字官方试用通道调用模型服务（仅官方发布版提供，需服务端可用）。为控制免费试用额度、防止异常调用并统计服务消耗，官方服务端会记录必要的调用元数据，包括设备匿名标识、调用时间、功能类型、输入字符数、token 消耗量、请求状态和错误类型。我们不会保存您提交的具体文档内容、输入文本或 AI 生成结果。试用结束后，您可配置自己的 DeepSeek API Key 继续使用，届时 AI 请求将由本地插件直接调用 DeepSeek，不再消耗源流官方试用额度。</p>
+        <p class="privacy-notice">本开源仓库不包含官方试用 AI 代理服务端实现，不包含 DeepSeek 官方 API Key，不包含生产部署配置。源流官方发布版可能提供有限试用额度；开源自部署用户请配置自己的 DeepSeek API Key，或自行实现兼容的 /trial/status 与 /ai/chat 服务。</p>
     </div>
 
     <div id="mainPanel" class="">
@@ -690,7 +732,7 @@
         <button id="replaceBtn" type="button">替换选中文字</button>
         <div id="replaceHint">已替换</div>
         <p class="usage-tip">
-          🔑 使用自己的API Key，数据直连DeepSeek，安全无中转。<br>
+          🔑 官方发布版试用期内可走源流官方试用通道；配置自己的 API Key 后将直连 DeepSeek，不消耗官方试用额度。<br>
           💡 快捷按钮：选中文字后点击，结果满意点「替换选中文字」写入文档。<br>
           💡 询问DeepSeek：可单独提问、选中文字后提问、或两者结合。<br>
           📮 作者：润源 · sourceflowdigital@gmail.com
@@ -703,18 +745,22 @@
         <div class="welcome-brand-title">源流数字 · WPS智能助手</div>
         <div class="welcome-brand-subtitle">欢迎使用！开始前请了解以下内容</div>
         <div class="welcome-item">
-            <div class="welcome-item-title">① 需要自己的 DeepSeek API Key</div>
+            <div class="welcome-item-title">① DeepSeek API Key（试用期内可选）</div>
             <div class="welcome-item-text">
-                <p>本插件通过您自己的 API Key 直连 DeepSeek</p>
-                <p>数据安全，不经过任何第三方服务器</p>
-                <a class="welcome-item-link" href="https://platform.deepseek.com" target="_blank">点击获取 API Key</a>
+                <p>源流官方发布版可使用官方试用通道；开源自部署默认不包含官方试用额度</p>
+                <p>如需使用 AI，请配置您自己的 DeepSeek API Key，或自行实现兼容的试用服务</p>
+                <div class="api-key-actions">
+                    <button id="welcome-open-api-key-btn" type="button">获取 API Key</button>
+                    <button id="welcome-copy-api-key-btn" type="button">复制 API Key 获取链接</button>
+                </div>
+                <div class="deeplink-text">https://platform.deepseek.com/api_keys</div>
             </div>
         </div>
         <div class="welcome-item">
             <div class="welcome-item-title">② 免费试用 3 天</div>
             <div class="welcome-item-text">
-                <p>首次安装可免费试用 3 天</p>
-                <p>试用期结束后需激活才能继续使用</p>
+                <p>官方发布版首次安装可免费试用 3 天（需官方服务端可用）</p>
+                <p>试用期结束后需激活或配置 API Key；开源自部署请直接配置 API Key</p>
                 <p>激活码 ¥19.9 买断，支持最多 2 台设备</p>
             </div>
         </div>
@@ -751,12 +797,191 @@
     <script>
         (function () {
             var ACTIVATION_API = "https://api.sourceflower.com/activation";
+            var TRIAL_STATUS_API = "https://api.sourceflower.com/trial/status";
+            var AI_PROXY_API = "https://api.sourceflower.com/ai/chat";
+            var DEEPSEEK_KEY_URL = "https://platform.deepseek.com/api_keys";
             var ACTIVATION_CODE_KEY = "activation_code";
             var DEVICE_FP_KEY = "device_fp";
             var INSTALL_TIME_KEY = "install_time";
             var WELCOME_SHOWN_KEY = "welcome_shown";
             var INSTALL_ID_KEY = "sourceflow_last_install_id";
             var TRIAL_DAYS = 3;
+            var trialState = {
+                status: "unknown",
+                trialAvailable: false,
+                message: ""
+            };
+
+            function getInstallId() {
+                return window.SOURCEFLOW_INSTALL_ID || "dev";
+            }
+
+            function generateUuid() {
+                return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0;
+                    var v = c === "x" ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            function hasUserApiKey() {
+                var key = localStorage.getItem("deepseek_api_key");
+                return !!(key && key.trim());
+            }
+
+            function openExternalUrl(url) {
+                try {
+                    if (window.Application && window.Application.OAAssist && window.Application.OAAssist.ShellExecute) {
+                        window.Application.OAAssist.ShellExecute(url);
+                        return true;
+                    }
+                } catch (e1) {}
+                try {
+                    var win = window.open(url, "_blank");
+                    if (win) return true;
+                } catch (e2) {}
+                return false;
+            }
+
+            function copyTextToClipboard(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    return navigator.clipboard.writeText(text).then(function () { return true; }).catch(function () { return false; });
+                }
+                return new Promise(function (resolve) {
+                    try {
+                        var ta = document.createElement("textarea");
+                        ta.value = text;
+                        ta.style.position = "fixed";
+                        ta.style.left = "-9999px";
+                        document.body.appendChild(ta);
+                        ta.select();
+                        var ok = document.execCommand("copy");
+                        document.body.removeChild(ta);
+                        resolve(!!ok);
+                    } catch (e) {
+                        resolve(false);
+                    }
+                });
+            }
+
+            function openDeepSeekKeyPage() {
+                var opened = openExternalUrl(DEEPSEEK_KEY_URL);
+                if (!opened) {
+                    copyTextToClipboard(DEEPSEEK_KEY_URL).then(function (copied) {
+                        if (copied) {
+                            alert("无法自动打开浏览器，已复制链接：\n" + DEEPSEEK_KEY_URL);
+                        } else {
+                            alert("请手动复制链接到浏览器打开：\n" + DEEPSEEK_KEY_URL);
+                        }
+                    });
+                }
+            }
+
+            function copyDeepSeekKeyLink() {
+                copyTextToClipboard(DEEPSEEK_KEY_URL).then(function (copied) {
+                    alert(copied ? "已复制链接：" + DEEPSEEK_KEY_URL : "复制失败，请手动复制：\n" + DEEPSEEK_KEY_URL);
+                });
+            }
+
+            function focusApiKeyInput() {
+                document.getElementById("settingsPanel").classList.add("open");
+                document.getElementById("apiKey").focus();
+            }
+
+            function parseActivationFetchError(err, response, rawText) {
+                if (!response) {
+                    return "无法连接激活服务器，请检查网络、防火墙或代理设置。";
+                }
+                if (response.status === 403) {
+                    return "激活请求被拒绝（403），请联系技术支持。";
+                }
+                if (response.status === 404) {
+                    return "激活接口不存在（404），请确认插件版本与服务器配置。";
+                }
+                if (response.status >= 500) {
+                    return "激活服务器异常（HTTP " + response.status + "），请稍后重试。";
+                }
+                if (rawText && rawText.indexOf("{") !== 0) {
+                    return "激活服务器响应格式异常（HTTP " + response.status + "）。";
+                }
+                if (err && err.message) {
+                    return err.message;
+                }
+                return "激活请求失败（HTTP " + response.status + "）。";
+            }
+
+            function readJsonResponse(response) {
+                return response.text().then(function (text) {
+                    if (!text) {
+                        return { data: null, rawText: "" };
+                    }
+                    try {
+                        return { data: JSON.parse(text), rawText: text };
+                    } catch (e) {
+                        var parseErr = new Error("响应格式异常");
+                        parseErr.rawText = text;
+                        throw parseErr;
+                    }
+                });
+            }
+
+            function updateTrialQuotaHint() {
+                var hintEl = document.getElementById("trial-quota-hint");
+                if (!hintEl) return;
+                if (hasUserApiKey()) {
+                    hintEl.textContent = "当前使用自有 DeepSeek API Key，AI 请求本地直连，不消耗试用额度。";
+                    return;
+                }
+                if (localStorage.getItem(ACTIVATION_CODE_KEY)) {
+                    hintEl.textContent = "已激活。如未配置 API Key，请填写后使用 AI 功能。";
+                    return;
+                }
+                if (trialState.trialAvailable) {
+                    hintEl.textContent =
+                        "试用通道可用 · 剩余 " + (trialState.remaining_days != null ? trialState.remaining_days : "?") + " 天 · " +
+                        "今日剩余 " + (trialState.remaining_daily_calls != null ? trialState.remaining_daily_calls : "?") + " 次 · " +
+                        "总剩余 " + (trialState.remaining_total_calls != null ? trialState.remaining_total_calls : "?") + " 次";
+                    return;
+                }
+                hintEl.textContent = trialState.message || "免费试用不可用，请配置 DeepSeek API Key。";
+            }
+
+            function fetchTrialStatus() {
+                return fetch(TRIAL_STATUS_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        device_fp: getOrCreateDeviceFp(),
+                        install_id: getInstallId(),
+                        has_user_api_key: hasUserApiKey()
+                    })
+                })
+                    .then(function (response) {
+                        return readJsonResponse(response).then(function (parsed) {
+                            if (!response.ok) {
+                                throw new Error("试用状态查询失败（HTTP " + response.status + "）");
+                            }
+                            var payload = parsed.data && parsed.data.data ? parsed.data.data : (parsed.data || {});
+                            trialState.status = payload.status || "unknown";
+                            trialState.trialAvailable = !!payload.trial_available;
+                            trialState.message = payload.message || "";
+                            trialState.remaining_days = payload.remaining_days;
+                            trialState.remaining_daily_calls = payload.remaining_daily_calls;
+                            trialState.remaining_total_calls = payload.remaining_total_calls;
+                            trialState.remaining_daily_tokens = payload.remaining_daily_tokens;
+                            trialState.remaining_total_tokens = payload.remaining_total_tokens;
+                            updateTrialQuotaHint();
+                            return trialState;
+                        });
+                    })
+                    .catch(function (err) {
+                        trialState.status = "unknown";
+                        trialState.trialAvailable = false;
+                        trialState.message = err.message || "试用状态查询失败";
+                        updateTrialQuotaHint();
+                        return trialState;
+                    });
+            }
 
             function resetOwnLocalStateForNewInstall() {
                 localStorage.removeItem(WELCOME_SHOWN_KEY);
@@ -785,10 +1010,7 @@
             function getOrCreateDeviceFp() {
                 var fp = localStorage.getItem(DEVICE_FP_KEY);
                 if (!fp) {
-                    fp = btoa(
-                        navigator.userAgent + screen.width + "x" +
-                        screen.height + navigator.language
-                    ).slice(0, 32);
+                    fp = generateUuid();
                     localStorage.setItem(DEVICE_FP_KEY, fp);
                 }
                 return fp;
@@ -814,13 +1036,19 @@
                 hideWelcomePage();
                 activationPage.style.display = "none";
                 appShell.style.display = "block";
-                if (showTrialBanner) {
-                    trialBanner.style.display = "block";
-                    trialBanner.textContent =
-                        "⏰ 试用期剩余 " + remainingDays + " 天 · 点击激活永久使用";
-                } else {
-                    trialBanner.style.display = "none";
-                }
+                fetchTrialStatus().then(function () {
+                    if (showTrialBanner) {
+                        trialBanner.style.display = "block";
+                        var days = trialState.remaining_days != null ? trialState.remaining_days : remainingDays;
+                        trialBanner.textContent =
+                            "⏰ 试用期剩余 " + days + " 天 · 今日剩余 " +
+                            (trialState.remaining_daily_calls != null ? trialState.remaining_daily_calls : "?") +
+                            " 次 · 点击激活永久使用";
+                    } else {
+                        trialBanner.style.display = "none";
+                    }
+                    updateTrialQuotaHint();
+                });
             }
 
             function showActivationUI(message, msgType) {
@@ -860,12 +1088,25 @@
             });
 
             function runTrialOrExpiredFlow() {
-                var daysUsed = getTrialDaysUsed();
-                if (daysUsed <= TRIAL_DAYS) {
-                    showMainUI(true, getTrialRemainingDays());
-                } else {
-                    showActivationUI("试用期已结束，请激活后继续使用", "error");
-                }
+                fetchTrialStatus().then(function () {
+                    if (localStorage.getItem(ACTIVATION_CODE_KEY)) {
+                        showMainUI(false, 0);
+                        return;
+                    }
+                    if (trialState.trialAvailable) {
+                        showMainUI(true, trialState.remaining_days != null ? trialState.remaining_days : getTrialRemainingDays());
+                        return;
+                    }
+                    var daysUsed = getTrialDaysUsed();
+                    if (daysUsed <= TRIAL_DAYS && trialState.status === "unknown") {
+                        showMainUI(true, getTrialRemainingDays());
+                        return;
+                    }
+                    showActivationUI(
+                        trialState.message || "试用期已结束，请激活或配置 DeepSeek API Key 后继续使用",
+                        "error"
+                    );
+                });
             }
 
             function verifyStoredActivation() {
@@ -882,18 +1123,31 @@
                     "&device_fp=" + encodeURIComponent(deviceFp)
                 )
                     .then(function (response) {
-                        return response.json();
+                        return readJsonResponse(response).then(function (parsed) {
+                            if (!response.ok) {
+                                throw { response: response, rawText: parsed.rawText };
+                            }
+                            return parsed.data;
+                        });
                     })
                     .then(function (data) {
                         if (data && data.success) {
                             showMainUI(false);
                         } else {
                             clearActivationCode();
-                            showActivationUI("设备验证失败，请重新激活", "error");
+                            showActivationUI(
+                                (data && data.message) ? data.message : "设备验证失败，请重新激活",
+                                "error"
+                            );
                         }
                     })
-                    .catch(function () {
-                        showActivationUI("网络连接失败，请检查网络后重试", "error");
+                    .catch(function (err) {
+                        var msg = parseActivationFetchError(
+                            err,
+                            err && err.response ? err.response : null,
+                            err && err.rawText ? err.rawText : (err && err.message ? err.message : "")
+                        );
+                        showActivationUI(msg, "error");
                     });
             }
 
@@ -921,7 +1175,12 @@
                     })
                 })
                     .then(function (response) {
-                        return response.json();
+                        return readJsonResponse(response).then(function (parsed) {
+                            if (!response.ok) {
+                                throw { response: response, rawText: parsed.rawText };
+                            }
+                            return parsed.data;
+                        });
                     })
                     .then(function (data) {
                         if (data && data.success) {
@@ -939,8 +1198,15 @@
                             );
                         }
                     })
-                    .catch(function () {
-                        setActivationMsg("网络连接失败，请检查网络后重试", "error");
+                    .catch(function (err) {
+                        setActivationMsg(
+                            parseActivationFetchError(
+                                err,
+                                err && err.response ? err.response : null,
+                                err && err.rawText ? err.rawText : ""
+                            ),
+                            "error"
+                        );
                     })
                     .finally(function () {
                         setActivationBtnLoading(false);
@@ -973,6 +1239,9 @@
                 hideWelcomePage();
                 showActivationUI("", "");
             });
+
+            document.getElementById("welcome-open-api-key-btn").addEventListener("click", openDeepSeekKeyPage);
+            document.getElementById("welcome-copy-api-key-btn").addEventListener("click", copyDeepSeekKeyLink);
 
             if (document.readyState === "loading") {
                 document.addEventListener("DOMContentLoaded", initStartup);
@@ -1068,16 +1337,22 @@
                 saveHint.textContent = "已保存";
                 saveHint.className = "";
                 saveHint.style.display = "block";
+                fetchTrialStatus();
                 setTimeout(function () {
                     saveHint.style.display = "none";
                     settingsPanel.classList.remove("open");
                 }, 800);
             });
 
+            document.getElementById("openApiKeyPageBtn").addEventListener("click", openDeepSeekKeyPage);
+            document.getElementById("copyApiKeyLinkBtn").addEventListener("click", copyDeepSeekKeyLink);
+            document.getElementById("fillApiKeyBtn").addEventListener("click", focusApiKeyInput);
+
             document.getElementById("resetKeyBtn").addEventListener("click", function() {
                 localStorage.removeItem(STORAGE_KEY);
                 document.getElementById("apiKey").value = "";
                 document.getElementById("saveHint").textContent = "已重置";
+                fetchTrialStatus();
                 setTimeout(function() {
                     document.getElementById("saveHint").textContent = "";
                 }, 2000);
@@ -1130,9 +1405,7 @@
                 }
             }
 
-            function callDeepSeek(apiKey, prompt, showReplace) {
-                setLoading(true);
-
+            function buildSystemPrompt() {
                 var userRole = localStorage.getItem(ROLE_KEY) || "不限";
                 var docType = localStorage.getItem(DOC_TYPE_KEY) || "自动识别";
                 var audience = localStorage.getItem(AUDIENCE_KEY) || "不限";
@@ -1154,7 +1427,104 @@
                 } else {
                     systemPrompt += "3. 直接输出处理结果，不要解释你的处理过程。";
                 }
+                return systemPrompt;
+            }
 
+            function showTrialBlockedMessage() {
+                if (localStorage.getItem(ACTIVATION_CODE_KEY)) {
+                    showError(
+                        "请配置 DeepSeek API Key 后使用 AI 功能。\n" +
+                        "可点击 ⚙ 设置 →「获取 API Key」或「填写 API Key」。"
+                    );
+                    return;
+                }
+                showError(
+                    "免费试用额度已用完，请配置自己的 DeepSeek API Key 后继续使用。\n" +
+                    "可点击 ⚙ 设置 →「获取 API Key」或「填写 API Key」。"
+                );
+            }
+
+            function resolveAiMode() {
+                if (hasUserApiKey()) {
+                    return "user_key";
+                }
+                if (localStorage.getItem(ACTIVATION_CODE_KEY)) {
+                    return "blocked";
+                }
+                if (trialState.trialAvailable) {
+                    return "trial_proxy";
+                }
+                return "blocked";
+            }
+
+            function ensureAiAvailable() {
+                if (localStorage.getItem(ACTIVATION_CODE_KEY) && !hasUserApiKey()) {
+                    showTrialBlockedMessage();
+                    return null;
+                }
+                var mode = resolveAiMode();
+                if (mode === "user_key" || mode === "trial_proxy") {
+                    return mode;
+                }
+                showTrialBlockedMessage();
+                return null;
+            }
+
+            function callTrialProxy(prompt, showReplace, actionType) {
+                setLoading(true);
+                fetch(AI_PROXY_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        device_fp: getOrCreateDeviceFp(),
+                        install_id: getInstallId(),
+                        action_type: actionType || "chat",
+                        input_text: prompt,
+                        context: buildSystemPrompt(),
+                        model: MODEL
+                    })
+                })
+                    .then(function (response) {
+                        return readJsonResponse(response).then(function (parsed) {
+                            if (!response.ok) {
+                                var serverMsg = parsed.data && parsed.data.message ? parsed.data.message : ("试用 AI 请求失败（HTTP " + response.status + "）");
+                                throw new Error(serverMsg);
+                            }
+                            return parsed.data;
+                        });
+                    })
+                    .then(function (data) {
+                        if (data && data.success && data.content) {
+                            if (data.quota) {
+                                trialState.remaining_days = data.quota.remaining_days;
+                                trialState.remaining_daily_calls = data.quota.remaining_daily_calls;
+                                trialState.remaining_total_calls = data.quota.remaining_total_calls;
+                                updateTrialQuotaHint();
+                            }
+                            showResult(data.content, showReplace);
+                            return;
+                        }
+                        var errCode = data && data.error_code ? data.error_code : "server_error";
+                        var errMsg = data && data.message ? data.message : "试用 AI 请求失败";
+                        if (errCode === "trial_expired" || errCode === "quota_exceeded") {
+                            trialState.trialAvailable = false;
+                            trialState.message = errMsg;
+                            updateTrialQuotaHint();
+                            showTrialBlockedMessage();
+                            return;
+                        }
+                        throw new Error(errMsg);
+                    })
+                    .catch(function (err) {
+                        showError("错误：" + (err.message || String(err)));
+                    })
+                    .finally(function () {
+                        resetActionButtons();
+                    });
+            }
+
+            function callDeepSeekDirect(apiKey, prompt, showReplace) {
+                setLoading(true);
                 fetch(API_URL, {
                     method: "POST",
                     headers: {
@@ -1165,7 +1535,7 @@
                         model: MODEL,
                         stream: false,
                         messages: [
-                            { role: "system", content: systemPrompt },
+                            { role: "system", content: buildSystemPrompt() },
                             { role: "user", content: prompt }
                         ]
                     })
@@ -1175,7 +1545,7 @@
                             if (!response.ok) {
                                 var errMsg = (data.error && data.error.message)
                                     ? data.error.message
-                                    : ("请求失败，HTTP " + response.status);
+                                    : ("DeepSeek 请求失败，HTTP " + response.status);
                                 throw new Error(errMsg);
                             }
                             return data;
@@ -1201,21 +1571,29 @@
                     });
             }
 
-            function runQuickAction(prompt) {
-                var apiKey = localStorage.getItem(STORAGE_KEY);
-                if (!apiKey) {
-                    showError("请先点击 ⚙设置 配置您的 API Key");
+            function callAi(prompt, showReplace, actionType) {
+                var mode = ensureAiAvailable();
+                if (!mode) return;
+                if (mode === "user_key") {
+                    callDeepSeekDirect(localStorage.getItem(STORAGE_KEY), prompt, showReplace);
                     return;
                 }
-                callDeepSeek(apiKey, prompt, true);
+                callTrialProxy(prompt, showReplace, actionType);
+            }
+
+            function callDeepSeek(apiKey, prompt, showReplace) {
+                callAi(prompt, showReplace, "chat");
+            }
+
+            function runQuickAction(prompt, actionType) {
+                var mode = ensureAiAvailable();
+                if (!mode) return;
+                callAi(prompt, true, actionType || "quick_action");
             }
 
             askBtn.addEventListener("click", function () {
-                var apiKey = localStorage.getItem(STORAGE_KEY);
-                if (!apiKey) {
-                    showError("请先点击 ⚙ 设置您的 API Key");
-                    return;
-                }
+                var mode = ensureAiAvailable();
+                if (!mode) return;
 
                 var selectedText = getSelectionText().trim();
                 var question = questionEl.value.trim();
@@ -1232,7 +1610,7 @@
                     return;
                 }
 
-                callDeepSeek(apiKey, prompt, false);
+                callAi(prompt, false, "ask");
             });
 
             replaceBtn.addEventListener("click", function () {
