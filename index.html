@@ -896,6 +896,9 @@
                 localStorage.removeItem("deepseek_api_key");
                 localStorage.removeItem("deepseek_response_length");
                 localStorage.removeItem("deepseek_response_length_limit");
+                localStorage.removeItem("user_role");
+                localStorage.removeItem("doc_type");
+                localStorage.removeItem("wps_assistant_audience");
                 localStorage.removeItem(WELCOME_SHOWN_KEY);
                 localStorage.removeItem(INSTALL_TIME_KEY);
                 localStorage.removeItem(ACTIVATION_CODE_KEY);
@@ -951,9 +954,18 @@
             function syncInstallIdAndResetIfNeeded() {
                 var currentInstallId = window.SOURCEFLOW_INSTALL_ID || "dev";
                 var lastInstallId = localStorage.getItem(INSTALL_ID_KEY);
-                if (lastInstallId !== currentInstallId) {
-                    resetOwnLocalStateForNewInstall();
+                if (currentInstallId && currentInstallId !== "dev" && lastInstallId !== currentInstallId) {
+                    clearPluginLocalStorageKeys();
                     localStorage.setItem(INSTALL_ID_KEY, currentInstallId);
+                    var apiKeyInput = document.getElementById("apiKey");
+                    if (apiKeyInput) {
+                        apiKeyInput.value = "";
+                    }
+                    var responseLengthLimitInput = document.getElementById("responseLengthLimitInput");
+                    if (responseLengthLimitInput) {
+                        responseLengthLimitInput.value = "300";
+                    }
+                    updateSettingsModuleStatus();
                 }
             }
 
@@ -1039,6 +1051,8 @@
                 localStorage.setItem(DOC_TYPE_KEY, docType);
                 syncSelectValues(role, docType);
             }
+
+            syncInstallIdAndResetIfNeeded();
 
             var savedKey = localStorage.getItem(STORAGE_KEY);
             if (savedKey) {
